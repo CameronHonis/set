@@ -69,6 +69,24 @@ var _ = Describe("Set", func() {
 				Expect(foundMatch).To(BeTrue())
 			}
 		})
+		When("the set is mutated after Flatten is called", func() {
+			var s *Set[int]
+			BeforeEach(func() {
+				s = EmptySet[int]()
+				s.Add(1)
+				s.Add(2)
+				s.Add(3)
+				Expect(s.Size()).To(Equal(3))
+				flatS := s.Flatten()
+				Expect(len(flatS)).To(Equal(3))
+				s.Remove(3)
+				Expect(s.Size()).To(Equal(2))
+			})
+			It("does not keep a stale flattened array in memory", func() {
+				flatS := s.Flatten()
+				Expect(flatS).To(HaveLen(2))
+			})
+		})
 	})
 	Describe("#EmptySet", func() {
 		It("returns a set of the specified generic", func() {
