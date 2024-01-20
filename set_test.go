@@ -14,6 +14,16 @@ var _ = Describe("Set", func() {
 			s.Add(12)
 			Expect(s.Size()).To(Equal(1))
 		})
+		When("the element already exists in the set", func() {
+			var s *Set[int]
+			BeforeEach(func() {
+				s = EmptySet[int]()
+				s.Add(12)
+			})
+			It("does not error", func() {
+				s.Add(12)
+			})
+		})
 	})
 	Describe("::Has", func() {
 		When("the set does not have the item", func() {
@@ -85,6 +95,80 @@ var _ = Describe("Set", func() {
 			It("does not keep a stale flattened array in memory", func() {
 				flatS := s.Flatten()
 				Expect(flatS).To(HaveLen(2))
+			})
+		})
+	})
+	Describe("::Union", func() {
+		var s1, s2 *Set[int]
+		BeforeEach(func() {
+			s1 = EmptySet[int]()
+			s2 = EmptySet[int]()
+		})
+		When("the sets are disjoint", func() {
+			BeforeEach(func() {
+				s1.Add(1)
+				s1.Add(2)
+				s2.Add(10)
+				s2.Add(20)
+			})
+			It("returns a set that exactly contains both sets", func() {
+				s3 := s1.Union(s2)
+				Expect(s3.Flatten()).To(HaveLen(4))
+				Expect(s3.Has(1)).To(BeTrue())
+				Expect(s3.Has(2)).To(BeTrue())
+				Expect(s3.Has(10)).To(BeTrue())
+				Expect(s3.Has(20)).To(BeTrue())
+			})
+		})
+		When("the sets share some elements", func() {
+			BeforeEach(func() {
+				s1.Add(1)
+				s1.Add(2)
+				s2.Add(2)
+				s2.Add(3)
+			})
+			It("returns a set that exactly contains both sets", func() {
+				s3 := s1.Union(s2)
+				Expect(s3.Flatten()).To(HaveLen(3))
+				Expect(s3.Has(1)).To(BeTrue())
+				Expect(s3.Has(2)).To(BeTrue())
+				Expect(s3.Has(3)).To(BeTrue())
+			})
+		})
+	})
+	Describe("::Intersect", func() {
+		var s1, s2 *Set[int]
+		BeforeEach(func() {
+			s1 = EmptySet[int]()
+			s2 = EmptySet[int]()
+		})
+		When("the sets are disjoint", func() {
+			BeforeEach(func() {
+				s1.Add(1)
+				s1.Add(3)
+				s2.Add(20)
+				s2.Add(40)
+			})
+			It("returns an empty set", func() {
+				s3 := s1.Intersect(s2)
+				Expect(s3.Flatten()).To(HaveLen(0))
+			})
+		})
+		When("the sets share some elements", func() {
+			BeforeEach(func() {
+				s1.Add(1)
+				s1.Add(2)
+				s1.Add(3)
+
+				s2.Add(2)
+				s2.Add(3)
+				s2.Add(4)
+			})
+			It("returns the intersection set", func() {
+				s3 := s1.Intersect(s2)
+				Expect(s3.Flatten()).To(HaveLen(2))
+				Expect(s3.Has(2))
+				Expect(s3.Has(3))
 			})
 		})
 	})

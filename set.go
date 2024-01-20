@@ -56,6 +56,27 @@ func (s *Set[T]) Flatten() []T {
 	return keys
 }
 
+func (s *Set[T]) Union(s1 *Set[T]) *Set[T] {
+	out := EmptySet[T]()
+	for _, e := range s.Flatten() {
+		out.Add(e)
+	}
+	for _, e := range s1.Flatten() {
+		out.Add(e)
+	}
+	return out
+}
+
+func (s *Set[T]) Intersect(s1 *Set[T]) *Set[T] {
+	out := EmptySet[T]()
+	for _, e := range s.Flatten() {
+		if s1.Has(e) {
+			out.Add(e)
+		}
+	}
+	return out
+}
+
 func EmptySet[T comparable]() *Set[T] {
 	return &Set[T]{
 		mu:   sync.Mutex{},
