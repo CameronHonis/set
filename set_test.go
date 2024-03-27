@@ -172,6 +172,21 @@ var _ = Describe("Set", func() {
 			})
 		})
 	})
+	Describe("::Copy", func() {
+		var set *Set[string]
+		BeforeEach(func() {
+			set = EmptySet[string]()
+			set.Add("asdf")
+		})
+		It("Returns a shallow copy of the set", func() {
+			cpSet := set.Copy()
+			cpSet.Add("jkl")
+			Expect(set.Has("asdf")).To(BeTrue())
+			Expect(set.Has("jkl")).To(BeFalse())
+			Expect(cpSet.Has("asdf")).To(BeTrue())
+			Expect(cpSet.Has("jkl")).To(BeTrue())
+		})
+	})
 	Describe("#EmptySet", func() {
 		It("returns a set of the specified generic", func() {
 			s := EmptySet[uint16]()

@@ -77,6 +77,18 @@ func (s *Set[T]) Intersect(s1 *Set[T]) *Set[T] {
 	return out
 }
 
+func (s *Set[T]) Copy() *Set[T] {
+	dataCp := make(map[T]bool)
+	for key, val := range s.data {
+		dataCp[key] = val
+	}
+
+	return &Set[T]{
+		mu:   sync.Mutex{},
+		data: dataCp,
+	}
+}
+
 func EmptySet[T comparable]() *Set[T] {
 	return &Set[T]{
 		mu:   sync.Mutex{},
